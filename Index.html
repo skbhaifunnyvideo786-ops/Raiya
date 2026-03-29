@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Raiya Official</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <style>
+        @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+        @keyframes rotate { to { --angle: 360deg; } }
+        @keyframes sunRotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes rgbText {
+            0% { color: #ff0000; text-shadow: 0 0 10px #ff0000; }
+            33% { color: #00ff00; text-shadow: 0 0 10px #00ff00; }
+            66% { color: #0000ff; text-shadow: 0 0 10px #0000ff; }
+            100% { color: #ff0000; text-shadow: 0 0 10px #ff0000; }
+        }
+        body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; padding: 20px; min-height: 100vh; position: relative; overflow-x: hidden; padding-bottom: 110px; }
+        body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; border: 4px solid transparent; border-image: linear-gradient(var(--angle), #ff0000, #00ff00, #0000ff, #ff0000) 1; z-index: 999; pointer-events: none; animation: 4s rotate linear infinite; }
+        .rgb-title { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; font-style: italic; letter-spacing: -2px; animation: rgbText 3s linear infinite; display: inline-block; }
+        .glass-card { background: rgba(15, 15, 15, 0.9); border: 1px solid #222; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        .pkg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .pkg-card { background: #111; border: 1px solid #333; border-radius: 12px; padding: 12px 5px; cursor: pointer; transition: 0.3s; text-align: center; }
+        .pkg-card.active { border-color: #dc2626; background: rgba(220, 38, 38, 0.15); box-shadow: 0 0 15px rgba(220, 38, 38, 0.4); }
+        .trust-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 25px; }
+        .trust-card { background: #111; border: 1px solid #222; border-radius: 15px; padding: 15px; text-align: center; border-bottom: 3px solid #dc2626; transition: 0.3s; }
+        .trust-icon { font-size: 20px; margin-bottom: 8px; display: block; }
+        .trust-title { font-size: 11px; font-weight: 900; text-transform: uppercase; color: #fff; }
+        .trust-desc { font-size: 9px; color: #888; margin-top: 2px; }
+        .wa-slim-bar { position: fixed; bottom: 8px; left: 8px; right: 8px; background: #25d366; color: white; padding: 12px; text-align: center; font-weight: 800; font-size: 13px; z-index: 1000; text-decoration: none; border-radius: 15px; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
+        .admin-panel { display: none; background: #000; border: 2px solid #dc2626; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 95%; max-width: 650px; height: 85vh; overflow-y: auto; z-index: 10001; padding: 25px; border-radius: 20px; }
+        input, textarea { background: #111 !important; border: 1px solid #333 !important; color: #fff !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 8px; font-size: 13px; }
+        .circular-logo-container { position: relative; width: 100px; height: 100px; margin: 0 auto; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 25px rgba(255, 0, 0, 0.7); }
+        .sun-animation { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 50%; background: conic-gradient(#ff0000, #ff9900, #ff0000); animation: sunRotate 4s linear infinite; z-index: -1; filter: blur(10px); }
+        .circular-logo-img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; }
+        .admin-dot { width: 15px; height: 15px; background: #ff0000; border-radius: 50%; display: inline-block; cursor: pointer; position: fixed; bottom: 30px; right: 30px; z-index: 1001; opacity: 0.2; }
+    </style>
+</head>
+<body class="flex flex-col items-center">
+
+    <a href="#" id="waChatLink" class="wa-slim-bar" target="_blank">সরাসরি হোয়াটসঅ্যাপে কথা বলুন</a>
+
+    <div class="w-full max-w-md pt-4">
+        <div class="text-center mb-6">
+            <div class="circular-logo-container mb-4">
+                <div class="sun-animation"></div>
+                <img id="logoImg" src="" class="circular-logo-img">
+            </div>
+            <h1 id="siteTitle" class="rgb-title">RAIYA</h1>
+            <p id="siteDesc" class="mt-3 text-red-500 text-[11px] font-medium bg-red-950/10 p-3 rounded-xl border border-red-900/20"></p>
+        </div>
+
+        <div class="trust-grid">
+            <div class="trust-card"><span class="trust-icon">🚀</span><p class="trust-title">INSTANT ACCESS</p><p class="trust-desc">পেমেন্টের পরেই আইডি পাবেন</p></div>
+            <div class="trust-card"><span class="trust-icon">✅</span><p class="trust-title">QUALITY CHECK</p><p class="trust-desc">১০০% ওয়ার্কিং গ্যারান্টি</p></div>
+            <div class="trust-card"><span class="trust-icon">🔒</span><p class="trust-title">SECURITY</p><p class="trust-desc">নিরাপদ পেমেন্ট গেটওয়ে</p></div>
+            <div class="trust-card"><span class="trust-icon">🤖</span><p class="trust-title">AUTO SUPPORT</p><p class="trust-desc">যেকোনো সমস্যায় আমরা আছি</p></div>
+        </div>
+
+        <div class="pkg-grid">
+            <div onclick="selectPkg(1)" id="p1" class="pkg-card active"><p class="text-[8px] text-gray-500 font-bold uppercase">Single</p><p class="text-lg font-black">1 ID</p></div>
+            <div onclick="selectPkg(5)" id="p5" class="pkg-card"><p class="text-[8px] text-gray-500 font-bold uppercase">Combo</p><p class="text-lg font-black">5 IDs</p></div>
+            <div onclick="selectPkg(10)" id="p10" class="pkg-card"><p class="text-[8px] text-gray-500 font-bold uppercase">Bulk</p><p class="text-lg font-black">10 IDs</p></div>
+        </div>
+
+        <div class="glass-card p-6 mb-8 text-center">
+            <div id="stepSelection">
+                <div class="flex justify-between items-center mb-6 text-left">
+                    <div><h2 class="text-lg font-bold uppercase">Premium Access</h2><span id="stockStatus" class="text-[10px] text-green-500 font-bold"></span></div>
+                    <div class="text-right"><p class="text-3xl font-black italic">₹<span id="totalDisplay">0</span></p></div>
+                </div>
+                <button onclick="showPayment()" class="w-full bg-green-600 py-4 rounded-xl font-black uppercase shadow-lg">Buy Now</button>
+            </div>
+
+            <div id="stepPayment" class="hidden">
+                <div class="bg-white p-3 rounded-2xl mb-4 flex justify-center mx-auto w-fit"><img id="qrCode" src="" class="w-40 h-40"></div>
+                <input type="text" id="utrInput" placeholder="Enter 12 Digit UTR" class="text-center font-mono">
+                <button onclick="processOrder()" class="w-full bg-red-600 py-4 rounded-xl font-black uppercase mt-2">Verify & Submit</button>
+            </div>
+
+            <div id="stepPending" class="hidden">
+                <h4 class="font-black text-sm uppercase text-yellow-500">অপেক্ষা করুন...</h4>
+                <p class="text-[10px] mt-2 italic text-gray-400">অ্যাডমিন আইডি চেক করে দিচ্ছে।</p>
+            </div>
+
+            <div id="stepDelivery" class="hidden p-4 bg-green-600 rounded-xl text-black">
+                <h4 class="font-black mb-2 text-xs uppercase italic">Success! Your ID:</h4>
+                <div id="idContent" class="bg-black text-green-400 p-4 rounded-lg font-mono text-[10px] whitespace-pre-wrap"></div>
+            </div>
+        </div>
+    </div>
+
+    <div onclick="openAdmin()" class="admin-dot"></div>
+
+    <div id="adminPanel" class="admin-panel shadow-2xl">
+        <h2 class="text-red-600 font-black uppercase italic mb-4">Admin Dashboard</h2>
+        <div id="pendingList" class="mb-4 space-y-2"></div>
+        <hr class="border-zinc-800 mb-4">
+        <input type="text" id="admLogo" placeholder="Logo URL">
+        <input type="text" id="admTitle" placeholder="Site Title">
+        <input type="text" id="admDesc" placeholder="Site Description">
+        <input type="text" id="admWA" placeholder="WhatsApp Number">
+        <input type="text" id="admUPI" placeholder="UPI ID">
+        <input type="number" id="admPrice" placeholder="Price Per ID">
+        <textarea id="admStock" rows="5" placeholder="IDs (One per line)"></textarea>
+        <button onclick="saveAdmin()" class="w-full bg-green-600 py-4 rounded-xl font-black uppercase mt-4">Save To Online Database</button>
+        <button onclick="closeAdmin()" class="w-full bg-zinc-900 py-2 rounded-xl text-xs mt-2">Close</button>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyB" + "DxFFhEBTM0rmWcTUIOqYQ3D5Ope0REy8",
+            authDomain: "raiya-official-f23.firebaseapp.com",
+            databaseURL: "https://raiya-official-f23-default-rtdb.firebaseio.com",
+            projectId: "raiya-official-f23",
+            storageBucket: "raiya-official-f23.appspot.com",
+            messagingSenderId: "143352445409",
+            appId: "1:143352445409:web:0b144fddfba84c227cbaa0"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        let config = { logo: "", title: "", desc: "", whatsapp: "", upi: "", price: 0, stock: [], orders: [] };
+        let currentQty = 1, myUTR = null;
+
+        db.ref('siteData').on('value', (s) => {
+            const d = s.val(); if(d) { config = d; if(!config.orders) config.orders = []; if(!config.stock) config.stock = []; updateUI(); }
+        });
+
+        function updateUI() {
+            document.getElementById('logoImg').src = config.logo || '';
+            document.getElementById('siteTitle').innerText = config.title || 'RAIYA';
+            document.getElementById('siteDesc').innerText = config.desc || '';
+            document.getElementById('stockStatus').innerText = "Stock: " + config.stock.length;
+            document.getElementById('totalDisplay').innerText = config.price * currentQty;
+            document.getElementById('qrCode').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=${config.upi}&pn=RAIYA&am=${config.price * currentQty}&cu=INR`;
+            document.getElementById('waChatLink').href = `https://api.whatsapp.com/send?phone=${config.whatsapp}`;
+            
+            let pnd = config.orders.filter(o => o.status === 'pending');
+            document.getElementById('pendingList').innerHTML = pnd.map(o => `
+                
